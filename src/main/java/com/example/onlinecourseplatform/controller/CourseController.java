@@ -28,9 +28,9 @@ public class CourseController {
     private final Utility utility;
 
     /**
-     * Retrieve all courses (admin only).
+     * Retrieve all courses.
      */
-    @Operation(summary = "Get all courses (Admin only)")
+    @Operation(summary = "Get all courses")
     @GetMapping("/all")
     public ResponseEntity<List<CourseDto>> getAllCourses() {
         log.info("Fetching all courses (ADMIN)");
@@ -95,7 +95,7 @@ public class CourseController {
      */
     @Operation(summary = "Delete a course (Instructor only)")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR,ADMIN')")
     public ResponseEntity<?> deleteCourse(@PathVariable Long id, Principal principal) {
         Long instructorId = utility.getUserIdFromPrincipal(principal);
         courseService.deleteCourse(id, instructorId);
@@ -108,7 +108,7 @@ public class CourseController {
      */
     @Operation(summary = "Get students enrolled in a course (Instructor only)")
     @GetMapping("/{id}/students")
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR','ADMIN')")
     public ResponseEntity<List<UserDto>> getEnrolledStudents(@PathVariable Long id, Principal principal) {
         Long instructorId = utility.getUserIdFromPrincipal(principal);
         log.info("Instructor {} fetching students for course ID {}", instructorId, id);
