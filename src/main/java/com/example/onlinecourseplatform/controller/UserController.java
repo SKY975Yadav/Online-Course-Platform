@@ -31,7 +31,7 @@ public class UserController {
      * Get all users (Admin only).
      */
     @Operation(summary = "Get all users (Admin only)")
-    @GetMapping
+    @GetMapping("all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         log.info("Admin requested all users");
