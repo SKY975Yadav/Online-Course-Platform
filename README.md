@@ -1,36 +1,72 @@
-# 🎓 Online Course Platform - Backend
+# Online Course Platform 🎓
 
-A backend service for an online course platform built using **Spring Boot**, supporting secure user authentication, course management, and enrollment features.
+A comprehensive Spring Boot application for managing online courses with role-based access control, JWT authentication, and Redis session management.
 
----
+## 📋 Table of Contents
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Database Schema](#-database-schema)
+- [Testing](#-testing)
+- [Environment Variables](#-environment-variables)
+- [Contributing](#-contributing)
 
-## 📌 Features
+## ✨ Features
 
-- ✅ User registration with roles: `STUDENT`, `INSTRUCTOR`
-- 🔐 Secure login with **JWT-based authentication**
-- 🧾 User profile management
-- 📚 Course creation & enrollment
-- 💡 OTP-based password reset
-- 🚀 Token caching using **Redis**
-- 🧪 Unit tested with **JUnit** & **Mockito**
+### 🔐 Authentication & Authorization
+- JWT-based authentication
+- Role-based access control (STUDENT, INSTRUCTOR, ADMIN)
+- Redis-powered session management
+- Password reset with OTP verification
+- Secure password encoding
 
----
+### 👥 User Management
+- User registration and profile management
+- Role-specific dashboards
+- Password change functionality
+- Admin user initialization
 
-## 🧱 Tech Stack
+### 📚 Course Management
+- Create, read, update, delete courses
+- Instructor-specific course management
+- Course enrollment system
 
-- Java 17
-- Spring Boot
-- Spring Security
-- JWT (JSON Web Tokens)
-- MySQL
-- Redis
-- Lombok
-- JUnit 5
-- Mockito
+### 📊 Enrollment System
+- Course enrollment/unenrollment
+- Enrollment history tracking
+- Instructor view of enrolled students
+- Automatic cleanup on user/course deletion
 
----
+### 🔧 Additional Features
+- Comprehensive input validation
+- Global exception handling
+- Swagger API documentation
+- Transaction management
+- Audit logging
 
-## 🗂️ Project Structure
+## 🛠 Tech Stack
+
+### Backend
+- **Java 17+**
+- **Spring Boot 3.x**
+- **Spring Security 6.x**
+- **Spring Data JPA**
+- **JWT (JSON Web Tokens)**
+- **Redis** - Session management
+- **MySQL** - Primary database
+- **Maven** - Dependency management
+
+### Testing
+- **JUnit 5**
+- **Mockito**
+- **Spring Boot Test**
+
+### Documentation
+- **Swagger/OpenAPI 3**
+
+## 🏗 Architecture
 
 ```
 src/
@@ -42,153 +78,232 @@ src/
 │   │   ├── repository/       # Data Access Layer
 │   │   ├── security/         # JWT Config & Filters
 │   │   ├── service/          # Business Logic
-│   │   ├── utilty/           # Utilities (Converts etc.)
-│   │   └── config/           # Configuration
+│   │   ├── utilty/           # Utilities (Mappers etc.)
+│   │   └── config/           # Security Configuration
 │   └── resources/
 │       ├── application.properties
 │       └── static/
 ├── test/                     # Unit Tests
 ```
 
----
+### Key Design Patterns
+- **MVC Pattern** - Clear separation of concerns
+- **Repository Pattern** - Data access abstraction
+- **DTO Pattern** - Data transfer and validation
+- **Builder Pattern** - Object construction
+- **Dependency Injection** - Loose coupling
 
-## 🔒 Role-Based Access Control (RBAC)
+## 🚀 Getting Started
 
-The platform implements strict access control and data integrity rules based on user roles:
+### Prerequisites
+- Java 17 or higher
+- Maven 3.6+
+- MySQL 8.0+
+- Redis 6.0+
+- Docker (optional)
 
-### 👨‍🏫 Instructor Permissions
-- ✅ **Can create courses**
-- ✅ **Can update the courses they create**
+### Installation
 
-- 🗑️ **Can delete the courses they created**
-- ⚠️ When an instructor is deleted:
-  - All **their courses** are automatically deleted.
-  - All **enrollments** associated with those courses are also deleted.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/SKY975Yadav/Online-Course-Platform.git
+   cd Online-Course-Platform
+   ```
 
-### 🎓 Student Permissions
-- ✅ **Can enroll in courses**
-- 🗑️ **Can delete any of their enrollments**
+2. **Set up MySQL Database**
+   ```sql
+   CREATE DATABASE online_course_platform;
+   ```
 
-### 🔐 Admin Permissions
-- Full access to user, course, and enrollment management.
-- Can promote users and manage platform settings (handled via initial config in `application.properties`).
+3. **Start Redis Server**
+   ```bash
+   # Using Docker
+   docker run -d --name my-redis -p 6379:6379 redis:latest
+   
+   # Or install locally and start
+   redis-server
+   ```
 
-These rules ensure:
-- 🔐 Security: Users only interact with their own data.
-- ⚖️ Fairness: Instructors can only modify what they own.
-- 🧹 Cleanup: No orphaned data after user deletion.
+4. **Configure Environment Variables**
+   ```bash
+   export SECRET_KEY=your-jwt-secret-key-here
+   export JAVA_PROJECTS_ADMIN_EMAIL=admin@example.com
+   export JAVA_PROJECTS_ADMIN_PASSWORD=admin123
+   ```
 
----
+5. **Update application.properties**
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/online_course_platform
+   spring.datasource.username=your-username
+   spring.datasource.password=your-password
+   ```
 
-## 🔐 Configuration
+6. **Run the application**
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
 
-Before running the application, make sure to configure the following properties in your `application.properties` file or as environment variables.
+The application will start at `http://localhost:8080`
 
-### Required Properties
+## 📖 API Documentation
 
-```properties
-# Secret key for JWT token signing and verification
-jwt.secret=${SECRET_KEY}
-
-# Admin account setup (used for initial login and management)
-admin.email=${JAVA_PROJECTS_ADMIN_EMAIL}
-admin.password=${JAVA_PROJECTS_ADMIN_PASSWORD}
+Once the application is running, access the Swagger UI at:
+```
+http://localhost:8080/swagger-ui/index.html
 ```
 
-### 🔑 Hints & Notes
+### Key Endpoints
 
-- `jwt.secret`:  
-  A long, random string used to generate and validate JWT tokens.  
-  ⚠️ **Do not share or commit this key to version control.** Set it securely using environment variables or secret managers.
+#### Authentication
+- `POST /auth/login` - User login
+- `POST /auth/register` - User registration
+- `POST /auth/logout` - User logout
+- `POST /auth/forgot-password` - Initiate password reset
+- `POST /auth/reset-password` - Reset password with OTP
 
-- `admin.email` & `admin.password`:  
-  These are used to create the default admin account when the application boots for the first time.  
-  You can log in using these credentials and then manage other users through the platform.  
-  💡 Tip: Store these values in your environment and not directly in the `application.properties` file for better security.
+#### Users
+- `GET /api/users` - Get all users (Admin only)
+- `PUT /api/users/update` - Update user profile
+- `POST /api/users/change-password` - Change password
+- `DELETE /api/users/{id}` - Delete user (Admin only)
 
-Example (for local development):
+#### Courses
+- `GET /api/courses` - Get all courses
+- `POST /api/courses` - Create course (Instructor only)
+- `GET /api/courses/{id}` - Get course details
+- `PUT /api/courses/{id}` - Update course (Owner only)
+- `DELETE /api/courses/{id}` - Delete course (Owner only)
+- `GET /api/courses/instructor/{id}` - Get courses by instructor
+- `GET /api/courses/{id}/students` - Get enrolled students (Owner only)
 
+#### Enrollments
+- `GET /api/enrollments` - Get user's enrollments
+- `POST /api/enrollments/{courseId}` - Enroll in course
+- `DELETE /api/enrollments/{courseId}` - Unenroll from course
+- `GET /api/enrollments/all` - Get all enrollments (Admin only)
+
+## 🗄 Database Schema
+
+### Users Table
+Spring boot can generate all these table when you run the appication for the first time or you can create by yourself
+```sql
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('STUDENT', 'INSTRUCTOR', 'ADMIN') NOT NULL
+);
+```
+
+### Courses Table
+```sql
+CREATE TABLE courses (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    instructor_id BIGINT NOT NULL,
+    price DECIMAL(10,2),
+    FOREIGN KEY (instructor_id) REFERENCES users(id)
+);
+```
+
+### Enrollments Table
+```sql
+CREATE TABLE enrollments (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    student_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
+    enrolled_at DATETIME NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id),
+    UNIQUE KEY unique_enrollment (student_id, course_id)
+);
+```
+
+## 🧪 Testing
+
+The project includes comprehensive unit tests for all service layers:
+
+- `AuthServiceTest.java` - Authentication service tests
+- `CourseServiceTest.java` - Course management tests
+- `EnrollmentServiceTest.java` - Enrollment service tests
+- `RedisServiceTest.java` - Redis operations tests
+- `UserServiceTest.java` - User management tests
+
+### Running Tests
 ```bash
-export SECRET_KEY=mySuperSecretKey123!
-export JAVA_PROJECTS_ADMIN_EMAIL=admin@example.com
-export JAVA_PROJECTS_ADMIN_PASSWORD=StrongPassword123
-```
-----
+# Run all tests
+mvn test
 
-## ⚙️ Getting Started
+# Run specific test class
+mvn test -Dtest=AuthServiceTest
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/online-course-platform.git
-cd online-course-platform
+# Run tests with coverage
+mvn test jacoco:report
 ```
 
-### 2. Set up the MySQL database
+## 🔧 Environment Variables
 
-- Create a database named `online_course_platform`
-- Update the properties file:
+Required environment variables:
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/online_course_db
-spring.datasource.username=your_mysql_username
-spring.datasource.password=your_mysql_password
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `SECRET_KEY` | JWT signing key | `mySecretKey123!@#` |
+| `JAVA_PROJECTS_ADMIN_EMAIL` | Admin user email | `admin@example.com` |
+| `JAVA_PROJECTS_ADMIN_PASSWORD` | Admin user password | `AdminPass123!` |
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Stateless authentication with configurable expiration
+- **Password Encryption**: BCrypt hashing for secure password storage
+- **Role-based Authorization**: Method-level security based on user roles
+- **CORS Configuration**: Cross-origin resource sharing setup
+- **Input Validation**: Comprehensive request validation
+- **Session Management**: Redis-based token storage for scalability
+
+## 🚀 Deployment
+
+### Docker Deployment (Optional)
+```dockerfile
+FROM openjdk:17-jdk-slim
+COPY target/online-course-platform.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
 
-### 3. Set up Redis (for token caching)
+### Production Considerations
+- Configure production database
+- Set up Redis cluster for high availability
+- Configure HTTPS/SSL
+- Set up monitoring and logging
+- Configure backup strategies
 
-- Install and run Redis locally (default port: `6379`)
+## 🤝 Contributing
 
-### 4. Run the project
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-```bash
-./mvnw spring-boot:run
-```
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 Author
+
+**Saikrishna G**
+- GitHub: [@SKY975Yadav](https://github.com/SKY975Yadav)
+- Project Link: [https://github.com/SKY975Yadav/Online-Course-Platform](https://github.com/SKY975Yadav/Online-Course-Platform)
+
+## 🙏 Acknowledgments
+
+- Spring Boot community for excellent documentation
+- JWT.io for JWT implementation guidance
+- Redis community for caching solutions
 
 ---
 
-## 🔐 Authentication Flow
-
-- **Login**: Generates a JWT and stores it in Redis.
-- **Logout**: Deletes the token from Redis.
-- **Token Validity**: Managed automatically using Redis expiry.
-
----
-
-## 📬 Key APIs
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/register` | POST | Register a new user |
-| `/api/auth/login` | POST | Login with credentials |
-| `/api/auth/logout` | POST | Logout current user |
-| `/api/user/me` | GET | Get current user info |
-| `/api/courses` | GET | Get all courses |
-| `/api/enroll/{courseId}` | POST | Enroll in a course |
-
----
-
-## 🧪 Running Tests
-
-Run unit tests using Maven:
-
-```bash
-./mvnw test
-```
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-You are free to use, modify, and distribute this software with attribution.
-
----
-
-**Author**: Saikrishna G  
-**Location**: Hyderabad, Telangana, India  
-**Email**: *[you can add your email here if you'd like]*
-
-See the [LICENSE](LICENSE) file for full legal details.
-
+⭐ If you found this project helpful, please give it a star!
