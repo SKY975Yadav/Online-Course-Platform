@@ -52,6 +52,69 @@ src/
 
 ---
 
+## 🔒 Role-Based Access Control (RBAC)
+
+The platform implements strict access control and data integrity rules based on user roles:
+
+### 👨‍🏫 Instructor Permissions
+- ✅ **Can create courses**
+- ✅ **Can update the courses they create**
+
+- 🗑️ **Can delete the courses they created**
+- ⚠️ When an instructor is deleted:
+  - All **their courses** are automatically deleted.
+  - All **enrollments** associated with those courses are also deleted.
+
+### 🎓 Student Permissions
+- ✅ **Can enroll in courses**
+- 🗑️ **Can delete any of their enrollments**
+
+### 🔐 Admin Permissions
+- Full access to user, course, and enrollment management.
+- Can promote users and manage platform settings (handled via initial config in `application.properties`).
+
+These rules ensure:
+- 🔐 Security: Users only interact with their own data.
+- ⚖️ Fairness: Instructors can only modify what they own.
+- 🧹 Cleanup: No orphaned data after user deletion.
+
+---
+
+## 🔐 Configuration
+
+Before running the application, make sure to configure the following properties in your `application.properties` file or as environment variables.
+
+### Required Properties
+
+```properties
+# Secret key for JWT token signing and verification
+jwt.secret=${SECRET_KEY}
+
+# Admin account setup (used for initial login and management)
+admin.email=${JAVA_PROJECTS_ADMIN_EMAIL}
+admin.password=${JAVA_PROJECTS_ADMIN_PASSWORD}
+```
+
+### 🔑 Hints & Notes
+
+- `jwt.secret`:  
+  A long, random string used to generate and validate JWT tokens.  
+  ⚠️ **Do not share or commit this key to version control.** Set it securely using environment variables or secret managers.
+
+- `admin.email` & `admin.password`:  
+  These are used to create the default admin account when the application boots for the first time.  
+  You can log in using these credentials and then manage other users through the platform.  
+  💡 Tip: Store these values in your environment and not directly in the `application.properties` file for better security.
+
+Example (for local development):
+
+```bash
+export SECRET_KEY=mySuperSecretKey123!
+export JAVA_PROJECTS_ADMIN_EMAIL=admin@example.com
+export JAVA_PROJECTS_ADMIN_PASSWORD=StrongPassword123
+```
+----
+
 ## ⚙️ Getting Started
 
 ### 1. Clone the repository
