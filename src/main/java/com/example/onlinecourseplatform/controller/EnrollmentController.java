@@ -31,7 +31,7 @@ public class EnrollmentController {
      * Get all enrollments (ADMIN only).
      */
     @Operation(summary = "Get all enrollments (Admin only)")
-    @GetMapping
+    @GetMapping("all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() {
         log.info("Admin requested all enrollments");
@@ -57,7 +57,7 @@ public class EnrollmentController {
      */
 
     @Operation(summary = "Get all courses student is enrolled in")
-    @GetMapping("/my")
+    @GetMapping
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<List<EnrollmentDto>> getMyEnrollments(Principal principal) {
         Long studentId = utility.getUserIdFromPrincipal(principal);

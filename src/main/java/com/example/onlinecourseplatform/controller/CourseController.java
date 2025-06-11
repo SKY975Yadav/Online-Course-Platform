@@ -31,8 +31,7 @@ public class CourseController {
      * Retrieve all courses (admin only).
      */
     @Operation(summary = "Get all courses (Admin only)")
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
     public ResponseEntity<List<CourseDto>> getAllCourses() {
         log.info("Fetching all courses (ADMIN)");
         return ResponseEntity.ok(courseService.getAllCourses());
